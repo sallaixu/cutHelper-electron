@@ -1,12 +1,12 @@
 import { createRouter,createWebHistory,createWebHashHistory } from 'vue-router'
 import Versions from '../components/Versions.vue'
-import My from '../components/My.vue'
+import CutTime from '../components/CutTime.vue'
 
 
 const routes = [
     {
         path: '/',
-        component:My
+        component:CutTime
     },
     {
         path: '/versions',

@@ -2,10 +2,12 @@ import { app, shell, BrowserWindow, ipcMain, clipboard, ipcRenderer  } from 'ele
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+// 主窗口
+var mainWindow = undefined
 
 function createWindow() {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
@@ -65,7 +67,11 @@ app.whenReady().then(() => {
   // IPC test
   ipcMain.on('ping', (enent) => {
     console.log('pong')
-    console.log(enent)
+  })
+  // 设置窗口置顶 
+  ipcMain.on('top', (isTop) => {
+    mainWindow.setAlwaysOnTop(isTop)
+    console.log(`设置指定状态:${isTop}`)
   })
 
 

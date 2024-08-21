@@ -1,6 +1,5 @@
 <template>
-  <div class="box">
-    <a-list class="demo-loadmore-list" :loading="initLoading" item-layout="horizontal" :data-source="data">
+<a-list class="demo-loadmore-list" :loading="initLoading" item-layout="horizontal" :data-source="data">
       <!-- <template #loadMore>
         <div v-if="!initLoading && !loading"
           :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
@@ -29,31 +28,16 @@
         </a-list-item>
       </template>
     </a-list>
-  </div>
 </template>
 
 <script setup>
+import { format } from 'timeago.js';
 import { ref } from 'vue'
 import { MoreOutlined } from '@ant-design/icons-vue'
-import { format } from 'timeago.js';
-const text = ref()
-const columns = ref([
-  {
-    title: '内容',
-    width: 100,
-    dataIndex: 'content',
-    key: 'content',
-    fixed: 'left',
-  },
-  {
-    title: '操作',
-    width: 10,
-    dataIndex: 'age',
-    key: 'age',
-    fixed: 'left',
-  }])
+
 window.electron.ipcRenderer.on('update', (_, value) => update(value))
 var data = ref([])
+const text = ref()
 function update(t) {
   console.log(t)
   text.value = t
@@ -62,23 +46,9 @@ function update(t) {
     "time": new Date()
   })
 }
-
-const pagination = {
-  onChange: (page) => {
-    console.log(page);
-  },
-  pageSize: 10,
-};
 </script>
 
 
-<style>
-.box {
-  height: 100vh;
-  width: 100vw;
-}
+<style scoped>
 
-.ant-list-item-action{
-  margin-left:10px !important;
-}
 </style>

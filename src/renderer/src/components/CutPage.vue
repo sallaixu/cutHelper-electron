@@ -4,7 +4,7 @@
     <a-tab-pane key="timeList" tab="列表"><time-list></time-list></a-tab-pane>
     <a-tab-pane key="groupList" tab="分组">分组页面todo</a-tab-pane>
     <template #rightExtra>
-      <a-button type="primary" @click="top()">
+      <a-button :type="appConfig.top?'primary':'default'" @click="top()">
         <template #icon><PushpinOutlined /></template>
       </a-button>
 
@@ -23,7 +23,7 @@ import { MoreOutlined,PushpinOutlined,SearchOutlined } from '@ant-design/icons-v
 const text = ref()
 var activeKey = ref("timeList")
 
-var updateTop = (isTop) => window.electron.ipcRenderer.send('top')
+var updateTop = (isTop) => window.electron.ipcRenderer.send('top',isTop)
 const appConfig = ref({
   "top":true,
 })
@@ -31,7 +31,6 @@ const appConfig = ref({
 function top(event) {
   appConfig.value.top = !appConfig.value.top
   //nodejs 设置窗口置顶状态
-  console.log("click")
   updateTop(appConfig.value.top)
 }
 

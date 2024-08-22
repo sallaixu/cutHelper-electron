@@ -18,10 +18,12 @@ function createWindow() {
       sandbox: false
     }
   })
-
+  
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    mainWindow.setAlwaysOnTop(true)
   })
+  
   var updateText = (readText) => mainWindow.webContents.send("update",readText)
   var lastClipboardText = ""
   setInterval(() => {
@@ -69,9 +71,9 @@ app.whenReady().then(() => {
     console.log('pong')
   })
   // 设置窗口置顶 
-  ipcMain.on('top', (isTop) => {
+  ipcMain.on('top', (_,isTop) => {
     mainWindow.setAlwaysOnTop(isTop)
-    console.log(`设置指定状态:${isTop}`)
+    console.log("set always top state: %d",isTop)
   })
 
 

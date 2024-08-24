@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "An Electron application with Vue",
   "main": "./out/main/index.js",
+  "type": "commonjs",
   "author": "example.com",
   "homepage": "https://electron-vite.org",
   "scripts": {
@@ -24,6 +25,7 @@
     "ant-design-vue": "^4.2.3",
     "antd": "^5.20.0",
     "electron-updater": "^6.1.7",
+    "nedb": "^1.8.0",
     "timeago.js": "^4.0.2",
     "vue-router": "^4.4.2"
   },

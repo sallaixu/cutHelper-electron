@@ -7,3 +7,5 @@ out
 out
 build
 .vscode
+path/to/datafile
+app.db

@@ -76,3 +76,17 @@ body {
   transform: scale(1.3);
   /* font-weight:bold !important; */
 }
+
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #656d78;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+

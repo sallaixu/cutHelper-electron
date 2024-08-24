@@ -2,20 +2,25 @@ import { app, shell, BrowserWindow, ipcMain, clipboard, ipcRenderer  } from 'ele
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+console.log(process.cwd());
+import { queryCutList,addCutList }  from './nedb'
+
 // 主窗口
 var mainWindow = undefined
+
 
 function createWindow() {
   // Create the browser window.
     mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: 347,
+    height: 441,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      nodeIntegration: true
     }
   })
   
@@ -25,14 +30,18 @@ function createWindow() {
   })
   
   var updateText = (readText) => mainWindow.webContents.send("update",readText)
-  var lastClipboardText = ""
+  var lastText = ""
   setInterval(() => {
-    const currentClipboardText = clipboard.readText();
-    if (currentClipboardText !== lastClipboardText) {
+    const currText = clipboard.readText();
+    if (currText !== lastText) {
       console.log('剪切板文本内容已变化');
-      lastClipboardText = currentClipboardText; // 更新上一次的文本
+      lastText = currText; // 更新上一次的文本
       // 在这里执行其他操作，例如响应剪切板变化
-      updateText(currentClipboardText)
+      addCutList({"time":new Date().getTime(),"text":currText},(error,docs)=>{
+        updateText(docs)
+      })
+      
+      
     }
   }, 1000); // 例如，每1000毫秒检查一次
 
@@ -74,6 +83,12 @@ app.whenReady().then(() => {
   ipcMain.on('top', (_,isTop) => {
     mainWindow.setAlwaysOnTop(isTop)
     console.log("set always top state: %d",isTop)
+  })
+
+  //查询数据接口
+  ipcMain.handle('queryCutList',async () => {
+     const docs = await queryCutList()
+     return docs
   })
 
 

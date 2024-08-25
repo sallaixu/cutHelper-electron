@@ -84,6 +84,11 @@ app.whenReady().then(() => {
     mainWindow.setAlwaysOnTop(isTop)
     console.log("set always top state: %d",isTop)
   })
+  // 拷贝剪切板
+  ipcMain.on('sendCopyItem', (_,item) => {
+    var item = JSON.parse(item)
+    clipboard.writeText(item.text)
+  })
 
   //查询数据接口
   ipcMain.handle('queryCutList',async () => {

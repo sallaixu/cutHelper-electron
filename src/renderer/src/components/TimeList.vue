@@ -1,6 +1,6 @@
 <template>
 <div class="cut-list">  
-<a-list class="demo-loadmore-list" :loading="initLoading" item-layout="horizontal" :data-source="data">
+<a-list class="demo-loadmore-list" :loading="initLoading" item-layout="horizontal" :data-source="allCutList">
       <!-- <template #loadMore>
         <div v-if="!initLoading && !loading"
           :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
@@ -8,14 +8,14 @@
         </div>
       </template> -->
       <template #renderItem="{ item,index }">
-        <a-list-item style="padding: 7px" :class="{'bg':index % 2 === 0}">
+        <a-list-item @dblclick="sendCopyItem(item)" style="padding: 7px" :class="{'bg':index % 2 === 0}" v-if="filterItems.includes(item)">
           <template #actions>
             <more-outlined class="jump" style="cursor: pointer;color: black;"/>
           </template>
           <a-skeleton avatar :title="false" :loading="!!item.loading" active >
             <a-list-item-meta style="height: 1.5em;line-height:1.5em;overflow: hidden">
               <template #title>
-                <a href="https://www.antdv.com/">{{ item.text }}</a>
+                <div>{{ item.text }}</div>
               </template>
               <!-- <template #avatar>
                 <a-avatar :src="item.picture.large" />
@@ -32,8 +32,11 @@
 
 <script setup>
 import { format,register } from 'timeago.js';
-import { ref,onMounted } from 'vue'
+import { ref,onMounted,computed } from 'vue'
 import { MoreOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue';
+import {containsIgnoreCase} from '../../utils/StringUtil'
+import {showMessageShort} from '../../utils/MessageUtil'
 
 
 const localeFunc = (number, index, totalSec) => {
@@ -56,24 +59,54 @@ const localeFunc = (number, index, totalSec) => {
 };
 
 register('short',localeFunc)
-
-var data = ref([])
+//全量剪切版数据
+var allCutList = ref([])
+// 搜索key
+var searchKey = ref("")
 
 onMounted(()=>{
-  queryCutList();
+  // 获取全量数据
+  sendQueryCutList();
 })
 
-//发射
-var queryCutList = () => window.electron.ipcRenderer.invoke('queryCutList').then(resp=>{
-  console.log(resp)
-  data.value = resp
+// =============================发射
+//查询全部剪切列表
+var sendQueryCutList = () => window.electron.ipcRenderer.invoke('queryCutList').then(resp=>{
+  allCutList.value = resp
 })
+//剪切板拷贝
+var sendCopyItem = (item) => {
+  console.log(item)
+  window.electron.ipcRenderer.send('sendCopyItem',JSON.stringify(item))
+  showMessageShort("拷贝成功")
+}
 //接收
 window.electron.ipcRenderer.on('update', (_, value) => update(value))
 
 function update(value) {
-  data.value.unshift(value)
+  allCutList.value.unshift(value)
 }
+
+const filterItems = computed(() => {
+  return allCutList.value.filter(filterData);
+});
+
+function copyItem() {
+
+}
+
+const search = (key) => {
+  searchKey.value = key
+  console.log(key)
+}
+
+function filterData(item) {
+  return containsIgnoreCase(item.text,searchKey.value)
+}
+
+
+// 暴漏方法
+defineExpose({ search });
 </script>
 
 

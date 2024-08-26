@@ -8,7 +8,6 @@
         <template #icon><PushpinOutlined /></template>
       </a-button>
       <a-input v-model:value="searchkey" :change="search()" size="default" style="width: 8em;margin-left: 4px;" placeholder="搜索" allow-clear />
-      
     </template>
   </a-tabs> 
   </div>

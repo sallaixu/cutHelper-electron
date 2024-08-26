@@ -1,13 +1,11 @@
-import { app, shell, BrowserWindow, ipcMain, clipboard, ipcRenderer  } from 'electron'
-import { join } from 'path'
+import { app, shell, BrowserWindow, ipcMain, clipboard, ipcRenderer, Menu, Tray  } from 'electron'
+import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
-console.log(process.cwd());
-import { queryCutList,addCutList }  from './nedb'
+import { queryCutList,addCutList, deleteItem }  from './nedb'
 
 // 主窗口
 var mainWindow = undefined
-
+var tray = null
 
 function createWindow() {
   // Create the browser window.
@@ -21,7 +19,8 @@ function createWindow() {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       nodeIntegration: true
-    }
+    },
+    icon:path.join(__dirname,"../../resources/cut.ico")
   })
   
   mainWindow.on('ready-to-show', () => {
@@ -75,6 +74,15 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
+
+  tray = new Tray('resources/cut.ico')
+  const contextMenu = Menu.buildFromTemplate([
+    { label: '代办', type: 'normal' },
+  ])
+  tray.setToolTip('剪切板助手')
+  tray.setContextMenu(contextMenu)
+
+
   // IPC test
   ipcMain.on('ping', (enent) => {
     console.log('pong')
@@ -94,6 +102,11 @@ app.whenReady().then(() => {
   ipcMain.handle('queryCutList',async () => {
      const docs = await queryCutList()
      return docs
+  })
+
+  //删除剪切板item
+  ipcMain.on('deleteCutListItem',(_,item)=>{
+    deleteItem(JSON.parse(item))
   })
 
 

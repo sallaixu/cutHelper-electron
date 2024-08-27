@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.20.4]
+        node-version: [20.4]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -29,6 +29,7 @@ jobs:
     - run: sudo dpkg --add-architecture i386
     - run: sudo mkdir -pm755 /etc/apt/keyrings
     - run: sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
+    - run: sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/focal/winehq-focal.sources
     - run: sudo apt update
     - run: sudo apt install --install-recommends winehq-stable
     - run: npm ci

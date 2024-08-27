@@ -1,46 +1,53 @@
-import { app, shell, BrowserWindow, ipcMain, clipboard, ipcRenderer, Menu, Tray  } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, clipboard, ipcRenderer, Menu, Tray, nativeImage   } from 'electron'
 import path, { join } from 'path'
+import appIcon from '../../resources/cut.ico?asset&asarUnpack'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { queryCutList,addCutList, deleteItem }  from './nedb'
 
 // 主窗口
-var mainWindow = undefined
+var mainWindow = null
+// 关于窗口
+var aboutWindow = null
 var tray = null
+
+
 
 function createWindow() {
   // Create the browser window.
     mainWindow = new BrowserWindow({
     width: 347,
     height: 441,
-    show: false,
-    autoHideMenuBar: true,
+    // show: false,
+    // autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       nodeIntegration: true
     },
-    icon:path.join(__dirname,"../../resources/cut.ico")
+    icon: nativeImage.createFromPath(appIcon)
   })
   
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     mainWindow.setAlwaysOnTop(true)
   })
+
+  mainWindow.on('closed', () => {
+    app.quit()
+  })
   
   var updateText = (readText) => mainWindow.webContents.send("update",readText)
   var lastText = ""
   setInterval(() => {
     const currText = clipboard.readText();
-    if (currText !== lastText) {
-      console.log('剪切板文本内容已变化');
+    if (currText !== lastText && currText) {
+      console.log('new cut');
       lastText = currText; // 更新上一次的文本
       // 在这里执行其他操作，例如响应剪切板变化
       addCutList({"time":new Date().getTime(),"text":currText},(error,docs)=>{
         updateText(docs)
       })
-      
-      
     }
   }, 1000); // 例如，每1000毫秒检查一次
 
@@ -74,14 +81,23 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-
-  tray = new Tray('resources/cut.ico')
+  tray = new Tray(nativeImage.createFromPath(appIcon))
   const contextMenu = Menu.buildFromTemplate([
-    { label: '代办', type: 'normal' },
+    { label: 'todo', type: 'normal', click:()=>{} },
+    { label: '关于', type: 'normal', click:()=>{createAboutWindow()} },
   ])
   tray.setToolTip('剪切板助手')
   tray.setContextMenu(contextMenu)
-
+  tray.on('click', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore() // 从最小化状态恢复窗口
+      }
+      mainWindow.focus() // 聚焦窗口
+    } else {
+      createWindow() // 如果窗口不存在，则创建一个新窗口
+    }
+  })
 
   // IPC test
   ipcMain.on('ping', (enent) => {
@@ -131,3 +147,52 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+
+
+
+function createAboutWindow () {
+  
+  if (aboutWindow) {
+    if (aboutWindow.isMinimized()) {
+      aboutWindow.restore() // 从最小化状态恢复窗口
+    }
+    aboutWindow.focus() // 如果窗口已经存在，则只需将其聚焦
+    return
+  }
+
+  // 创建一个新的浏览器窗口
+  aboutWindow = new BrowserWindow({
+    x:200,
+    y:200,
+    width: 300,
+    height: 400,
+    show: true,
+    title: "关于",
+    autoHideMenuBar: true,
+    // webPreferences: {
+    //   preload: path.join(__dirname, 'preload.js') // 如果你有预加载脚本
+    // },
+    icon: nativeImage.createFromPath(appIcon)
+  })
+
+  const url = require('url').format({
+    protocol: 'file',
+    slashes: true,
+    pathname: require('node:path').join(__dirname, '../renderer/index.html'),
+    hash: "#/about"
+  })
+
+
+  // 加载窗口的内容
+  // if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+  //   aboutWindow.loadURL(process.env['ELECTRON_RENDERER_URL']+"#/about")
+  // } else {
+  aboutWindow.loadURL(url)
+  // }
+  // aboutWindow.loadURL(`file://${path.join(__dirname, 'public', 'index.html')}#/about`)
+
+  // 监听窗口关闭事件，确保主窗口变量被清除
+  aboutWindow.on('closed', () => {
+    aboutWindow = null
+  })
+}

@@ -1,21 +1,7 @@
 <template>
   <div class="cut-list">
     <a-list class="list" :loading="initLoading" item-layout="horizontal" :data-source="allCutList">
-      <!-- <template #loadMore>
-        <div v-if="!initLoading && !loading"
-          :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
-          <a-button @click="onLoadMore">loading more</a-button>
-        </div>
-      </template> -->
       <template #renderItem="{ item, index }">
-        <!-- <a-popover :title="format(item.time,'short')" trigger="click">
-        <template #content>
-          <div style="overflow: scroll;height: 300px; width: 100vw;">
-            <pre>{{ item.text }}</pre>
-          </div>
-        </template> -->
-
-
         <a-list-item class="list-item" v-on:click="showDetail(item)" v-on:dblclick="sendCopyItem(item)"
           style="padding: 7px" :class="{ 'bg': index % 2 === 0 }" v-if="filterItems.includes(item)">
           <template #actions>
@@ -33,28 +19,19 @@
                 </a-menu>
               </template>
             </a-dropdown>
-
           </template>
           <a-skeleton avatar :title="false" :loading="!!item.loading" active>
             <a-list-item-meta style="height: 1.5em;line-height:1.5em;overflow: hidden">
               <template #title>
                 <div>{{ item.text }}</div>
               </template>
-              <!-- <template #avatar>
-                <a-avatar :src="item.picture.large" />
-              </template> -->
             </a-list-item-meta style="padding:1px">
             <div>{{ format(item.time, 'short') }}</div>
           </a-skeleton>
         </a-list-item>
-        <!-- </a-popover> -->
       </template>
 
     </a-list>
-    <!-- 展示详情 -->
-    <a-modal v-model:visible="visible" title="Basic Modal" width="100%" wrap-class-name="full-modal" @ok="handleOk">
-      <pre>{{ cutDetail }}</pre>
-    </a-modal>
 
   </div>
 </template>

@@ -1,12 +1,17 @@
 import { createRouter,createWebHistory,createWebHashHistory } from 'vue-router'
 import CutPage from '../components/CutPage.vue'
+import About from '../components/About.vue'
 
 
 const routes = [
     {
         path: '/',
-        component:CutPage
+        component: CutPage
     },
+    {
+        path: '/about',
+        component: About
+    }
 ]
 
 const router = createRouter({

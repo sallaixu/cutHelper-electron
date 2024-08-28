@@ -22,7 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v4 
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -34,3 +34,11 @@ jobs:
     - run: sudo apt install --install-recommends winehq-stable
     - run: npm ci
     - run: npm run build:win --if-present
+    - run: ls -lh
+    - name: build product
+      uses: actions/upload-artifact@v4
+      with:
+          name: Package
+          path: dist
+   
+    

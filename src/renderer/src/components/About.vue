@@ -5,8 +5,7 @@
     
     <dl class="info">
       <dt>作者: sallai</dt>
-      <dt>版本:</dt>
-      <dd>1.0.0</dd>
+      <dt>版本: 1.0.0</dt>
 
       <dt>电子邮箱:</dt>
       <dd><a href="mailto:sallai@aliyun.com">sallai@aliyun.com</a></dd>

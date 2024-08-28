@@ -1,8 +1,17 @@
 var Datastore = require('nedb')
-  , db = new Datastore({ filename: './app.db' });
+var db = new Datastore({ filename: './app.db' });
 db.loadDatabase(function (err) {    // Callback is optional
   // Now commands will be executed
 });
+var configDB = new Datastore({ filename: './config.db' });
+configDB.loadDatabase(function (err) {    // Callback is optional
+  // Now commands will be executed
+});
+
+export function setWakeUpHotKey() {
+  
+}
+
 
 // 添加
 export function addCutList(data,callback){

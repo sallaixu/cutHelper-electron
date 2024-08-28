@@ -1,25 +1,56 @@
-import { app, shell, BrowserWindow, ipcMain, clipboard, ipcRenderer, Menu, Tray, nativeImage   } from 'electron'
-import path, { join } from 'path'
+import {
+  app,
+  shell,
+  BrowserWindow,
+  ipcMain,
+  clipboard,
+  ipcRenderer,
+  Menu,
+  Tray,
+  nativeImage,
+  screen
+} from 'electron'
+import path, {
+  join
+} from 'path'
 import appIcon from '../../resources/cut.ico?asset&asarUnpack'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { queryCutList,addCutList, deleteItem }  from './nedb'
+import {
+  electronApp,
+  optimizer,
+  is
+} from '@electron-toolkit/utils'
+import {
+  queryCutList,
+  addCutList,
+  deleteItem
+} from './nedb'
+import {
+  loadMenu
+} from './menu'
+import {
+  initHotKey
+} from './hotkey'
 
 // 主窗口
 var mainWindow = null
 // 关于窗口
 var aboutWindow = null
+
+var settingWindow = null
 var tray = null
 
 
 
 function createWindow() {
   // Create the browser window.
-    mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 347,
     height: 441,
     // show: false,
     // autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    ...(process.platform === 'linux' ? {
+      icon
+    } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -27,7 +58,7 @@ function createWindow() {
     },
     icon: nativeImage.createFromPath(appIcon)
   })
-  
+
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     mainWindow.setAlwaysOnTop(true)
@@ -36,8 +67,8 @@ function createWindow() {
   mainWindow.on('closed', () => {
     app.quit()
   })
-  
-  var updateText = (readText) => mainWindow.webContents.send("update",readText)
+
+  var updateText = (readText) => mainWindow.webContents.send("update", readText)
   var lastText = ""
   setInterval(() => {
     const currText = clipboard.readText();
@@ -45,7 +76,10 @@ function createWindow() {
       console.log('new cut');
       lastText = currText; // 更新上一次的文本
       // 在这里执行其他操作，例如响应剪切板变化
-      addCutList({"time":new Date().getTime(),"text":currText},(error,docs)=>{
+      addCutList({
+        "time": new Date().getTime(),
+        "text": currText
+      }, (error, docs) => {
         updateText(docs)
       })
     }
@@ -53,16 +87,19 @@ function createWindow() {
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
-    return { action: 'deny' }
+    return {
+      action: 'deny'
+    }
   })
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-  }
+  loadHtml(mainWindow, "/")
+  // if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+  //   mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+  // } else {
+  //   mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+  // }
 
 }
 
@@ -73,6 +110,12 @@ function createWindow() {
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
+  //创建窗口
+  createWindow()
+  //加载菜单
+  loadMenu()
+  //注册热键
+  initHotKey()
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -82,9 +125,18 @@ app.whenReady().then(() => {
   })
 
   tray = new Tray(nativeImage.createFromPath(appIcon))
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'todo', type: 'normal', click:()=>{} },
-    { label: '关于', type: 'normal', click:()=>{createAboutWindow()} },
+  const contextMenu = Menu.buildFromTemplate([{
+      label: 'todo',
+      type: 'normal',
+      click: () => {}
+    },
+    {
+      label: '关于',
+      type: 'normal',
+      click: () => {
+        createAboutWindow()
+      }
+    },
   ])
   tray.setToolTip('剪切板助手')
   tray.setContextMenu(contextMenu)
@@ -104,29 +156,29 @@ app.whenReady().then(() => {
     console.log('pong')
   })
   // 设置窗口置顶 
-  ipcMain.on('top', (_,isTop) => {
+  ipcMain.on('top', (_, isTop) => {
     mainWindow.setAlwaysOnTop(isTop)
-    console.log("set always top state: %d",isTop)
+    console.log("set always top state: %d", isTop)
   })
   // 拷贝剪切板
-  ipcMain.on('sendCopyItem', (_,item) => {
+  ipcMain.on('sendCopyItem', (_, item) => {
     var item = JSON.parse(item)
     clipboard.writeText(item.text)
   })
 
   //查询数据接口
-  ipcMain.handle('queryCutList',async () => {
-     const docs = await queryCutList()
-     return docs
+  ipcMain.handle('queryCutList', async () => {
+    const docs = await queryCutList()
+    return docs
   })
 
   //删除剪切板item
-  ipcMain.on('deleteCutListItem',(_,item)=>{
+  ipcMain.on('deleteCutListItem', (_, item) => {
     deleteItem(JSON.parse(item))
   })
 
 
-  createWindow()
+
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -150,8 +202,8 @@ app.on('window-all-closed', () => {
 
 
 
-function createAboutWindow () {
-  
+function createAboutWindow() {
+
   if (aboutWindow) {
     if (aboutWindow.isMinimized()) {
       aboutWindow.restore() // 从最小化状态恢复窗口
@@ -162,8 +214,8 @@ function createAboutWindow () {
 
   // 创建一个新的浏览器窗口
   aboutWindow = new BrowserWindow({
-    x:200,
-    y:200,
+    x: 200,
+    y: 200,
     width: 300,
     height: 400,
     show: true,
@@ -175,24 +227,94 @@ function createAboutWindow () {
     icon: nativeImage.createFromPath(appIcon)
   })
 
-  const url = require('url').format({
-    protocol: 'file',
-    slashes: true,
-    pathname: require('node:path').join(__dirname, '../renderer/index.html'),
-    hash: "#/about"
-  })
-
-
-  // 加载窗口的内容
-  // if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-  //   aboutWindow.loadURL(process.env['ELECTRON_RENDERER_URL']+"#/about")
-  // } else {
-  aboutWindow.loadURL(url)
-  // }
-  // aboutWindow.loadURL(`file://${path.join(__dirname, 'public', 'index.html')}#/about`)
-
+  loadHtml(aboutWindow, "about")
   // 监听窗口关闭事件，确保主窗口变量被清除
   aboutWindow.on('closed', () => {
     aboutWindow = null
   })
+}
+
+
+export function createSettingWindow() {
+
+  if (settingWindow) {
+    if (settingWindow.isMinimized()) {
+      settingWindow.restore() // 从最小化状态恢复窗口
+    }
+    settingWindow.focus() // 如果窗口已经存在，则只需将其聚焦
+    return
+  }
+
+  // 创建一个新的浏览器窗口
+  aboutWindow = new BrowserWindow({
+    x: 200,
+    y: 200,
+    width: 500,
+    height: 400,
+    show: true,
+    title: "设置",
+    parent: mainWindow,
+    autoHideMenuBar: true,
+    // webPreferences: {
+    //   preload: path.join(__dirname, 'preload.js') // 如果你有预加载脚本
+    // },
+    icon: nativeImage.createFromPath(appIcon)
+  })
+
+  loadHtml(aboutWindow, "setting")
+  // 监听窗口关闭事件，确保主窗口变量被清除
+  aboutWindow.on('closed', () => {
+    aboutWindow = null
+  })
+}
+
+/**
+ * 加载html
+ * @param {窗口} window 
+ * @param {路由} hash 
+ */
+function loadHtml(window, hash = "") {
+  var url = null
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    console.log(process.env['ELECTRON_RENDERER_URL'])
+    url = require('url').format({
+      host: process.env['ELECTRON_RENDERER_URL'],
+      path: "/",
+      hash: hash
+    })
+    console.log(url)
+  } else {
+    url = require('url').format({
+      protocol: 'file',
+      slashes: true,
+      pathname: join(__dirname, '../renderer/index.html'),
+      hash: hash
+    })
+  }
+  window.loadURL(url)
+}
+
+export function swtichMainWindowFocus() {
+  if (mainWindow) {
+
+    if (mainWindow.isMinimized()) {
+      const {
+        x,
+        y
+      } = screen.getCursorScreenPoint();
+      console.log(x,y)
+      const bounds = mainWindow.getBounds();
+      mainWindow.restore() // 从最小化状态恢复窗口
+      mainWindow.setBounds({
+        x: x-50, // 新的 x 位置
+        y: y-50, // 新的 y 位置
+        width: bounds.width, // 保持原宽度
+        height: bounds.height // 保持原高度
+      });
+      mainWindow.focus() // 如果窗口已经存在，则只需将其聚焦
+    } else {
+      mainWindow.minimize()
+    }
+
+  }
 }

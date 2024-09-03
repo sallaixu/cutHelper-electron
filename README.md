@@ -41,5 +41,6 @@ $ npm run build:linux
 ```
 
 > 软件截图
+
 ![image](https://github.com/user-attachments/assets/aa915e24-aaef-449c-ae55-85f23b73ee7f)
 

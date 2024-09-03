@@ -31,6 +31,11 @@ import {
   initHotKey
 } from './hotkey'
 
+import sequelize from './database';
+import CutItem  from './cutItemModel';
+
+import CutItemService  from './dao/CutItemDao'
+
 // 主窗口
 var mainWindow = null
 // 关于窗口
@@ -39,7 +44,9 @@ var aboutWindow = null
 var settingWindow = null
 var tray = null
 
-
+sequelize.sync()
+    .then(() => console.log('Database synchronized'))
+    .catch(error => console.error('Error synchronizing database:', error));
 
 function createWindow() {
   // Create the browser window.
@@ -82,6 +89,7 @@ function createWindow() {
       }, (error, docs) => {
         updateText(docs)
       })
+      CutItemService.addCutItem(currText)
     }
   }, 1000); // 例如，每1000毫秒检查一次
 

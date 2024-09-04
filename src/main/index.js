@@ -31,8 +31,8 @@ import {
   initHotKey
 } from './hotkey'
 
-import sequelize from './database';
-import CutItem  from './cutItemModel';
+import sequelize from './config/database';
+import CutItem  from './models/cutItemModel';
 
 import CutItemService  from './dao/CutItemDao'
 
@@ -77,19 +77,14 @@ function createWindow() {
 
   var updateText = (readText) => mainWindow.webContents.send("update", readText)
   var lastText = ""
-  setInterval(() => {
+  setInterval(async () => {
     const currText = clipboard.readText();
     if (currText !== lastText && currText) {
       console.log('new cut');
       lastText = currText; // 更新上一次的文本
       // 在这里执行其他操作，例如响应剪切板变化
-      addCutList({
-        "time": new Date().getTime(),
-        "text": currText
-      }, (error, docs) => {
-        updateText(docs)
-      })
-      CutItemService.addCutItem(currText)
+      var item = await CutItemService.addCutItem(currText)
+      updateText(item)
     }
   }, 1000); // 例如，每1000毫秒检查一次
 
@@ -171,12 +166,16 @@ app.whenReady().then(() => {
   // 拷贝剪切板
   ipcMain.on('sendCopyItem', (_, item) => {
     var item = JSON.parse(item)
-    clipboard.writeText(item.text)
+    console.log(item)
+    clipboard.writeText(item.content)
   })
 
   //查询数据接口
   ipcMain.handle('queryCutList', async () => {
-    const docs = await queryCutList()
+    const start = performance.now();
+    const docs = await CutItemService.getAllItem()
+    const end = performance.now();
+    console.log(`query all list time: ${end - start} milliseconds`);
     return docs
   })
 

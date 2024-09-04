@@ -1,11 +1,12 @@
-import CutItem from "../cutItemModel"
+import CutItem from "../models/cutItemModel"
+import { v4 as uuidv4 } from 'uuid';
 
 class CutItemService {
     // 创建用户
     static async addCutItem(content) {
         try {
-            const item = await CutItem.create({content,createTime:new Date().getTime()});
-            return item;
+            const item = await CutItem.create({id:uuidv4(),content:content,createTime:new Date()});
+            return item.toJSON();
         } catch (error) {
             throw new Error('Error creating user: ' + error.message);
         }
@@ -23,10 +24,10 @@ class CutItemService {
     }
 
     // 查询所有用户
-    static async getAllUsers() {
+    static async getAllItem() {
         try {
-            const users = await User.findAll();
-            return users;
+            const itemList = (await CutItem.findAll({order:[["createTime","DESC"]]}));
+            return itemList.map(item => item.toJSON());
         } catch (error) {
             throw new Error('Error retrieving users: ' + error.message);
         }

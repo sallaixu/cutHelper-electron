@@ -1,18 +1,19 @@
 const { DataTypes } = require('sequelize');
-import sequelize from './database';
+import { v4 as uuidv4 } from 'uuid';
+import sequelize from '../config/database';
 
 // 定义 User 模型
 const CutItem = sequelize.define('CutItem', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true
+        defaultValue: () =>uuidv4()
     },
     content: {
         type: DataTypes.TEXT,
         allowNull: false,
-        unique: true
+        unique: false
     },
     createTime:{
         type: DataTypes.DATE,

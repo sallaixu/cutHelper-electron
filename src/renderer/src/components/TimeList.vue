@@ -23,10 +23,10 @@
           <a-skeleton avatar :title="false" :loading="!!item.loading" active>
             <a-list-item-meta style="height: 1.5em;line-height:1.5em;overflow: hidden">
               <template #title>
-                <div>{{ item.text }}</div>
+                <div>{{ item.content }}</div>
               </template>
             </a-list-item-meta style="padding:1px">
-            <div>{{ format(item.time, 'short') }}</div>
+            <div>{{ format(item.createTime, 'short') }}</div>
           </a-skeleton>
         </a-list-item>
       </template>
@@ -67,6 +67,7 @@ const localeFunc = (number, index, totalSec) => {
 register('short', localeFunc)
 //全量剪切版数据
 var allCutList = ref([])
+var initLoading = ref(true)
 // 搜索key
 var searchKey = ref("")
 var cutDetailVisible = ref(false)
@@ -75,6 +76,7 @@ var doubleClick = false;
 onMounted(() => {
   // 获取全量数据
   sendQueryCutList();
+  initLoading.value = false
 })
 
 // =============================发射
@@ -136,7 +138,7 @@ const search = (key) => {
 }
 
 function filterData(item) {
-  return containsIgnoreCase(item.text, searchKey.value)
+  return containsIgnoreCase(item.content, searchKey.value)
 }
 
 

@@ -17,9 +17,19 @@
 
 
 <script setup>
-import { ref } from 'vue';
+import { ref,onMounted } from 'vue';
 const mode = ref('left');
 const activeKey = ref(1);
+const appConfig = ref({})
+
+onMounted(()=>{
+    queryAppConfig()
+}) 
+var queryAppConfig = () => window.electron.ipcRenderer.invoke('queryConfig').then(config => {
+    console.log(config)
+    appConfig.value = config
+})
+
 const callback = val => {
     console.log("123 %s",val);
 };

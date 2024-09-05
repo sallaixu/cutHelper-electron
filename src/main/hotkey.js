@@ -1,5 +1,6 @@
 import {globalShortcut } from 'electron'
 import {swtichMainWindowFocus} from './index'
+import {config,writeConfig} from './config/appConfig'
 
 export function initHotKey() {
     register()
@@ -8,8 +9,7 @@ export function initHotKey() {
  * 注册热键
  */
 function register() {
-    globalShortcut.register('CommandOrControl+SPACE', () => {
-    console.log('CommandOrControl+X is pressed')
+    globalShortcut.register(config.hotkey.wakeup, () => {
     swtichMainWindowFocus()
   })
 }

@@ -36,6 +36,8 @@ import CutItem  from './models/cutItemModel';
 
 import CutItemService  from './dao/CutItemDao'
 
+import {config,writeConfig} from './config/appConfig'
+
 // 主窗口
 var mainWindow = null
 // 关于窗口
@@ -94,6 +96,8 @@ function createWindow() {
       action: 'deny'
     }
   })
+
+  mainWindow.webContents.openDevTools();
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
@@ -170,6 +174,12 @@ app.whenReady().then(() => {
     clipboard.writeText(item.content)
   })
 
+  // 写入配置
+  ipcMain.on('writeConfig', (_, config) => {
+    config = JSON.parse(config)
+    writeConfig(config)
+  })
+
   //查询数据接口
   ipcMain.handle('queryCutList', async () => {
     const start = performance.now();
@@ -178,6 +188,12 @@ app.whenReady().then(() => {
     console.log(`query all list time: ${end - start} milliseconds`);
     return docs
   })
+  // 查询配置
+  ipcMain.handle('queryConfig', async () => {
+    return config
+  })
+
+
 
   //删除剪切板item
   ipcMain.on('deleteCutListItem', (_, item) => {
@@ -262,9 +278,11 @@ export function createSettingWindow() {
     title: "设置",
     parent: mainWindow,
     autoHideMenuBar: true,
-    // webPreferences: {
-    //   preload: path.join(__dirname, 'preload.js') // 如果你有预加载脚本
-    // },
+    webPreferences: {
+      preload: join(__dirname, '../preload/index.js'),
+      sandbox: false,
+      nodeIntegration: true
+    },
     icon: nativeImage.createFromPath(appIcon)
   })
 

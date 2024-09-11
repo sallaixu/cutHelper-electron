@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "An Electron application with Vue",
   "main": "./out/main/index.js",
-  "type": "commonjs",
+  "type": "module",
   "author": "example.com",
   "homepage": "https://electron-vite.org",
   "scripts": {
@@ -24,7 +24,9 @@
     "@electron-toolkit/utils": "^3.0.0",
     "ant-design-vue": "^4.2.3",
     "antd": "^5.20.0",
+    "electron-store": "^10.0.0",
     "electron-updater": "^6.1.7",
+    "mousetrap": "^1.6.5",
     "nanoid": "^5.0.7",
     "nedb": "^1.8.0",
     "node-gyp": "^10.2.0",

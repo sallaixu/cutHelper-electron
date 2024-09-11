@@ -9,3 +9,6 @@ build
 .vscode
 path/to/datafile
 app.db
+database.db
+mydatebase.db
+database.db

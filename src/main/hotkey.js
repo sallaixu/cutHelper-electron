@@ -1,6 +1,6 @@
 import {globalShortcut } from 'electron'
 import {swtichMainWindowFocus} from './index'
-import {config,writeConfig} from './config/appConfig'
+import {configStore,getHotKey} from './config/config'
 
 export function initHotKey() {
     register()
@@ -9,7 +9,7 @@ export function initHotKey() {
  * 注册热键
  */
 function register() {
-    globalShortcut.register(config.hotkey.wakeup, () => {
+    globalShortcut.register(getHotKey().wakeup, () => {
     swtichMainWindowFocus()
   })
 }

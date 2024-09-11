@@ -25,5 +25,13 @@ export default defineConfig({
         }),
       ],
     }),]
-  }
+  },
+  pluginOptions: {
+    electronBuilder: {
+      builderOptions: {
+        // 额外资源配置
+        extraFiles: ["./config"],
+      },
+    },
+  },
 })

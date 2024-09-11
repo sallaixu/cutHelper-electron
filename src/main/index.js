@@ -32,11 +32,10 @@ import {
 } from './hotkey'
 
 import sequelize from './config/database';
-import CutItem  from './models/cutItemModel';
 
 import CutItemService  from './dao/CutItemDao'
 
-import {config,writeConfig} from './config/appConfig'
+import {configStore} from './config/config'
 
 // 主窗口
 var mainWindow = null
@@ -61,7 +60,7 @@ function createWindow() {
       icon
     } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: join(__dirname, '../preload/index.mjs'),
       sandbox: false,
       nodeIntegration: true
     },
@@ -174,11 +173,14 @@ app.whenReady().then(() => {
     clipboard.writeText(item.content)
   })
 
-  // 写入配置
-  ipcMain.on('writeConfig', (_, config) => {
-    config = JSON.parse(config)
-    writeConfig(config)
+  ipcMain.on('setStore', (_, key, value) => {
+    configStore.set(key, value)
   })
+  // 写入配置
+  // ipcMain.on('writeConfig', (_, config) => {
+  //   config = JSON.parse(config)
+  //   writeConfig(config)
+  // })
 
   //查询数据接口
   ipcMain.handle('queryCutList', async () => {
@@ -188,9 +190,9 @@ app.whenReady().then(() => {
     console.log(`query all list time: ${end - start} milliseconds`);
     return docs
   })
-  // 查询配置
+  //查询配置
   ipcMain.handle('queryConfig', async () => {
-    return config
+    return configStore.store
   })
 
 
@@ -279,7 +281,7 @@ export function createSettingWindow() {
     parent: mainWindow,
     autoHideMenuBar: true,
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: join(__dirname, '../preload/index.mjs'),
       sandbox: false,
       nodeIntegration: true
     },
@@ -296,7 +298,7 @@ export function createSettingWindow() {
 /**
  * 加载html
  * @param {窗口} window 
- * @param {路由} hash 
+ * @param {路由} hash
  */
 function loadHtml(window, hash = "") {
   var url = null

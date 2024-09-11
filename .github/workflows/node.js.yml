@@ -1,46 +1,38 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Node.js CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [20.4]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4 
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: sudo dpkg --add-architecture i386
-    - run: sudo mkdir -pm755 /etc/apt/keyrings
-    - run: sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
-    - run: sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/focal/winehq-focal.sources
-    - run: sudo apt update
-    - run: sudo apt install --install-recommends winehq-stable
+    - name: Install system dependencies
+      run: |
+        sudo dpkg --add-architecture i386
+        sudo mkdir -pm755 /etc/apt/keyrings
+        sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
+        sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/focal/winehq-focal.sources
+        sudo apt update
+        sudo apt install --install-recommends winehq-stable
     - run: npm ci
     - run: npm run build:win --if-present
     - run: mkdir ./product
     - run: find ./dist -mindepth 1 -maxdepth 2 -type f -name '*setup*' -exec cp {} ./product/ \;
     - run: ls -lh
-    - name: build product
+    - name: Build product
       uses: actions/upload-artifact@v4
       with:
-          name: product
-          path: ./product
-   
-    
+        name: product
+        path: ./product

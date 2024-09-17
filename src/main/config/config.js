@@ -1,10 +1,12 @@
 import Store from 'electron-store';
-// Store.initRenderer();
 //默认配置
 const defaultConfig = {
     //热键
     hotkey: {
       wakeup: "CommandOrControl+SPACE"
+    },
+    cut: {
+      maxItem: 500
     }
 }
 

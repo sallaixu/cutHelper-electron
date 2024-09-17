@@ -73,6 +73,7 @@ var searchKey = ref("")
 var cutDetailVisible = ref(false)
 var cutDetail = "";
 var doubleClick = false;
+let timeoutId = null;
 onMounted(() => {
   // 获取全量数据
   sendQueryCutList();
@@ -100,7 +101,6 @@ window.electron.ipcRenderer.on('update', (_, value) => update(value))
 function update(value) {
   allCutList.value.unshift(value)
 }
-
 // 关闭弹出信息
 
 function showDetail(item) {
@@ -133,8 +133,11 @@ function copyItem() {
 }
 
 const search = (key) => {
-  searchKey.value = key
-  console.log(key)
+  clearTimeout(timeoutId); // 取消之前的定时器
+  timeoutId = setTimeout(() => {
+    console.log(key)
+    searchKey.value = key
+  }, 500);
 }
 
 function filterData(item) {

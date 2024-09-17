@@ -2,12 +2,14 @@
 <template>
     <div class="setting">
         <a-tabs class="tabs" v-model:activeKey="activeKey" :tab-position="mode" @tabScroll="callback">
-            <a-tab-pane :key="1" tab="常规">
-                
-            </a-tab-pane>
-            <a-tab-pane :key="2" tab="热键">
+            <a-tab-pane :key="1" tab="热键">
                 <hot-key></hot-key>
             </a-tab-pane>
+            
+            <a-tab-pane :key="2" tab="常规">
+                
+            </a-tab-pane>
+            
 
 
         </a-tabs>

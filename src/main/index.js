@@ -96,7 +96,7 @@ function createWindow() {
     }
   })
 
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
@@ -245,6 +245,7 @@ function createAboutWindow() {
     height: 400,
     show: true,
     title: "关于",
+    parent: mainWindow,
     autoHideMenuBar: true,
     // webPreferences: {
     //   preload: path.join(__dirname, 'preload.js') // 如果你有预加载脚本
@@ -271,7 +272,7 @@ export function createSettingWindow() {
   }
 
   // 创建一个新的浏览器窗口
-  aboutWindow = new BrowserWindow({
+  settingWindow = new BrowserWindow({
     x: 200,
     y: 200,
     width: 500,
@@ -288,10 +289,10 @@ export function createSettingWindow() {
     icon: nativeImage.createFromPath(appIcon)
   })
 
-  loadHtml(aboutWindow, "setting")
+  loadHtml(settingWindow, "setting")
   // 监听窗口关闭事件，确保主窗口变量被清除
-  aboutWindow.on('closed', () => {
-    aboutWindow = null
+  settingWindow.on('closed', () => {
+    settingWindow = null
   })
 }
 

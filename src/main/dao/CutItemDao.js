@@ -1,17 +1,36 @@
 import CutItem from "../models/cutItemModel"
 import { v4 as uuidv4 } from 'uuid';
+import {configStore} from '../config/config'
 
 class CutItemService {
+
+    static async checkMaxItem() {
+        var max = configStore.get("cut.maxItem")
+        var count = await CutItem.count()
+        console.log(max + " " + count)
+        if(count > max) {
+          const oldestItems = await CutItem.findAll({
+              order: [['createTime', 'ASC']], // 按创建时间升序排序
+              limit: count - max // 获取超出最大数量的部分
+          });
+
+          // 删除最早的项目
+          for (const item of oldestItems) {
+              await item.destroy();
+          }
+        }
+      }
     // 创建用户
     static async addCutItem(content) {
         try {
             const item = await CutItem.create({id:uuidv4(),content:content,createTime:new Date()});
+            await CutItemService.checkMaxItem()
             return item.toJSON();
         } catch (error) {
             throw new Error('Error creating user: ' + error.message);
         }
     }
-
+    
     // 查询用户通过ID
     static async getUserById(id) {
         try {

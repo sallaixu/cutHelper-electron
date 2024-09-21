@@ -41,8 +41,10 @@ import {configStore} from './config/config'
 var mainWindow = null
 // 关于窗口
 var aboutWindow = null
-
+// 设置窗口
 var settingWindow = null
+// 详情窗口
+var commonWindow = null
 var tray = null
 
 sequelize.sync()
@@ -96,7 +98,7 @@ function createWindow() {
     }
   })
 
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
@@ -203,6 +205,12 @@ app.whenReady().then(() => {
   })
 
 
+  ipcMain.on('openDetailWindow', (_, item) => {
+    createCommonSignalWindow()
+    // deleteItem(JSON.parse(item))
+  })
+
+
 
 
   app.on('activate', function () {
@@ -293,6 +301,43 @@ export function createSettingWindow() {
   // 监听窗口关闭事件，确保主窗口变量被清除
   settingWindow.on('closed', () => {
     settingWindow = null
+  })
+}
+
+
+
+export function createCommonSignalWindow() {
+
+  if (commonWindow) {
+    if (commonWindow.isMinimized()) {
+      commonWindow.restore() // 从最小化状态恢复窗口
+    }
+    commonWindow.focus() // 如果窗口已经存在，则只需将其聚焦
+    return
+  }
+
+  // 创建一个新的浏览器窗口
+  commonWindow = new BrowserWindow({
+    x: 200,
+    y: 200,
+    width: 500,
+    height: 400,
+    show: true,
+    title: "设置",
+    parent: mainWindow,
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: join(__dirname, '../preload/index.mjs'),
+      sandbox: false,
+      nodeIntegration: true
+    },
+    icon: nativeImage.createFromPath(appIcon)
+  })
+
+  loadHtml(commonWindow, "detail")
+  // 监听窗口关闭事件，确保主窗口变量被清除
+  commonWindow.on('closed', () => {
+    commonWindow = null
   })
 }
 

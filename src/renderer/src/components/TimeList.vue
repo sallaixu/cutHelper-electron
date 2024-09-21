@@ -1,6 +1,6 @@
 <template>
   <div class="cut-list">
-    <a-list class="list" :loading="initLoading" item-layout="horizontal" :data-source="allCutList">
+    <a-list class="list" id="list" :loading="initLoading" item-layout="horizontal" :data-source="allCutList">
       <template #renderItem="{ item, index }">
         <a-list-item class="list-item" v-on:click="showDetail(item)" v-on:dblclick="sendCopyItem(item)"
           style="padding: 7px" :class="{ 'bg': index % 2 === 0 }" v-if="filterItems.includes(item)">
@@ -13,8 +13,15 @@
               <more-outlined class="jump" @click.prevent style="cursor: pointer;color: black;" />
               <template #overlay>
                 <a-menu>
-                  <a-menu-item @click="deleteItem(item)" key="0" style="color: #f5222d;">
-                    <delete-outlined /><label style="margin-left: 8px;">删除</label>
+                  <a-menu-item  @click="deleteItem(item)" key="0" style="color: #f5222d;">
+                    <div >
+                      <delete-outlined /><span  style="margin-left: 8px;">删除</span>
+                    </div>
+                  </a-menu-item>
+                  <a-menu-item @click="openDetail(item)" key="1">
+                    <div >
+                    <EditOutlined  /><span  style="margin-left: 8px;">详情</span>
+                    </div>
                   </a-menu-item>
                 </a-menu>
               </template>
@@ -23,23 +30,28 @@
           <a-skeleton avatar :title="false" :loading="!!item.loading" active>
             <a-list-item-meta style="height: 1.5em;line-height:1.5em;overflow: hidden">
               <template #title>
+                <a-popover  trigger="hover" :mouseEnterDelay="0.8" placement="topLeft">
+                  <template #title>{{ formatDate(item.createTime) }}</template>
+                  <template #content><div class="detail-style" style="max-height: 80vh;max-width: 90vw;"><pre>{{ item.content }}</pre></div></template>
                 <div>{{ item.content }}</div>
+              </a-popover>
               </template>
             </a-list-item-meta style="padding:1px">
             <div>{{ format(item.createTime, 'short') }}</div>
           </a-skeleton>
         </a-list-item>
+        
       </template>
-
+      
     </a-list>
-
+    
   </div>
 </template>
 
 <script setup>
 import { format, register } from 'timeago.js';
 import { ref, onMounted, computed } from 'vue'
-import { MoreOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { MoreOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue';
 import { containsIgnoreCase } from '../../utils/StringUtil'
 import { showMessageShort } from '../../utils/MessageUtil'
@@ -88,6 +100,8 @@ var sendQueryCutList = () => window.electron.ipcRenderer.invoke('queryCutList').
 
 var sendDeleteItem = (remove) => window.electron.ipcRenderer.send('deleteCutListItem', JSON.stringify(remove))
 
+var sendOpenDetail = (item) => window.electron.ipcRenderer.send('openDetailWindow', JSON.stringify(item))
+
 //剪切板拷贝
 var sendCopyItem = (item) => {
   doubleClick = true;
@@ -118,6 +132,11 @@ function showDetail(item) {
 
 
 }
+
+
+function openDetail(item) {
+  sendOpenDetail(item)
+} 
 
 function hidePop() {
   closed.value = false
@@ -159,6 +178,19 @@ function deleteItem(remove) {
   }
 }
 
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+const year = date.getFullYear();
+const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始
+const day = String(date.getDate()).padStart(2, '0');
+const hours = String(date.getHours()).padStart(2, '0');
+const minutes = String(date.getMinutes()).padStart(2, '0');
+const seconds = String(date.getSeconds()).padStart(2, '0');
+
+const formattedDate = `${year}年${month}月${day}日，${hours}:${minutes}:${seconds}`;
+return formattedDate
+}
+
 
 // 暴漏方法
 defineExpose({ search });
@@ -187,5 +219,14 @@ defineExpose({ search });
 
 .list-item:hover {
   background-color: rgb(173, 202, 203);
+}
+
+.click—class {
+  cursor: pointer !important;
+}
+
+.detail-style{
+  overflow-y:scroll;
+  overflow-x: scroll;
 }
 </style>

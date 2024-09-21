@@ -6,6 +6,7 @@ import {
 import CutPage from '../components/CutPage.vue'
 import About from '../components/About.vue'
 import Setting from '../components/setting/Setting.vue'
+import Detail from '../components/Detail.vue'
 
 
 const routes = [{
@@ -20,6 +21,12 @@ const routes = [{
 
     path: '/setting',
     component: Setting
+
+  },
+  {
+
+    path: '/detail',
+    component: Detail
 
   }
 ]

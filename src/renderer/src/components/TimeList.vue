@@ -32,11 +32,12 @@
               <template #title>
                 <a-popover  trigger="hover" :mouseEnterDelay="0.8" placement="topLeft">
                   <template #title>{{ formatDate(item.createTime) }}</template>
-                  <template #content><div class="detail-style" style="max-height: 80vh;max-width: 90vw;"><pre>{{ item.content }}</pre></div></template>
-                <div>{{ item.content }}</div>
+                  <template #content>
+                    <div class="detail-style" style="max-height: 80vh;max-width: 90vw;"><pre>{{ item.content }}</pre></div></template>
+                <div style="margin-right: 6px; overflow: hidden;">{{ item.content }}</div>
               </a-popover>
               </template>
-            </a-list-item-meta style="padding:1px">
+            </a-list-item-meta style="padding:1px;">
             <div>{{ format(item.createTime, 'short') }}</div>
           </a-skeleton>
         </a-list-item>
@@ -129,7 +130,6 @@ function showDetail(item) {
     }
     doubleClick = false; // 重置标志
   }, 250); // 设置合适的延时
-
 
 }
 

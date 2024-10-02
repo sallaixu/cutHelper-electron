@@ -98,11 +98,14 @@ function createWindow() {
     }
   })
 
-  mainWindow.webContents.openDevTools();
+  
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   loadHtml(mainWindow, "/")
+  if(is.dev)  {
+    mainWindow.webContents.openDevTools();
+  }
   // if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
   //   mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   // } else {
@@ -178,11 +181,6 @@ app.whenReady().then(() => {
   ipcMain.on('setStore', (_, key, value) => {
     configStore.set(key, value)
   })
-  // 写入配置
-  // ipcMain.on('writeConfig', (_, config) => {
-  //   config = JSON.parse(config)
-  //   writeConfig(config)
-  // })
 
   //查询数据接口
   ipcMain.handle('queryCutList', async () => {
@@ -206,7 +204,9 @@ app.whenReady().then(() => {
 
 
   ipcMain.on('openDetailWindow', (_, item) => {
-    createCommonSignalWindow()
+    item = JSON.parse(item)
+    console.log(item)
+    createCommonSignalWindow(item)
     // deleteItem(JSON.parse(item))
   })
 
@@ -306,7 +306,7 @@ export function createSettingWindow() {
 
 
 
-export function createCommonSignalWindow() {
+export function createCommonSignalWindow(query="") {
 
   if (commonWindow) {
     if (commonWindow.isMinimized()) {
@@ -334,7 +334,7 @@ export function createCommonSignalWindow() {
     icon: nativeImage.createFromPath(appIcon)
   })
 
-  loadHtml(commonWindow, "detail")
+  loadHtml(commonWindow, "detail",query)
   // 监听窗口关闭事件，确保主窗口变量被清除
   commonWindow.on('closed', () => {
     commonWindow = null
@@ -346,14 +346,15 @@ export function createCommonSignalWindow() {
  * @param {窗口} window 
  * @param {路由} hash
  */
-function loadHtml(window, hash = "") {
+function loadHtml(window, hash = "",query="") {
   var url = null
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     console.log(process.env['ELECTRON_RENDERER_URL'])
     url = require('url').format({
       host: process.env['ELECTRON_RENDERER_URL'],
       path: "/",
-      hash: hash
+      hash: hash,
+      query: query
     })
     console.log(url)
   } else {

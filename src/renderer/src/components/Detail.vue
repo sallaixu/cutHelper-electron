@@ -1,28 +1,37 @@
 <template>
 <div class="detail-page">
-    <a-card title="内容详情" bordered>
+    <a-card :title="item.title" bordered>
       <a-meta 
-        :title="item.title" 
+        :title=item.title 
         :description="formattedCreateTime"
-        style="margin-bottom: 16px;"
+        
       />
-      <a-divider />
       <div class="content">
-        <p>{{ item.content }}</p>
+        <pre>{{ item.content }}</pre>
       </div>
-      <a-button type="primary" @click="goBack">返回</a-button>
     </a-card>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+const route = useRoute();
+    // 获取查询参数
+const queryParams = route.query;
+const params = new URLSearchParams(window.location.search)
 var item = ref({
-    title:"复制内容",
-    content: "eopfsldfodsfsdjfsdfjdslfdslfdsjsl"
+    id: params.get("id"),
+    title: params.get("createTime"),
+    content: params.get("content")
 })
 </script>
 
 <style scoped>
 
+.detail-page {
+  width: 100vw;
+  height: 100vh;
+  overflow-y: scroll;
+}
 </style>

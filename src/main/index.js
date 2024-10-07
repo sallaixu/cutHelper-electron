@@ -20,11 +20,6 @@ import {
   is
 } from '@electron-toolkit/utils'
 import {
-  queryCutList,
-  addCutList,
-  deleteItem
-} from './nedb'
-import {
   loadMenu
 } from './menu'
 import {
@@ -34,6 +29,7 @@ import {
 import sequelize from './config/database';
 
 import CutItemService  from './dao/CutItemDao'
+import GroupService  from './dao/GroupDao'
 
 import {configStore} from './config/config'
 
@@ -210,6 +206,21 @@ app.whenReady().then(() => {
     // deleteItem(JSON.parse(item))
   })
 
+  //创建分组
+  ipcMain.handle('createGroup', (_,name) => {
+    console.log(name)
+    var item =  GroupService.createGroup(name);
+    return item;
+  })
+  //查询所有分组
+  ipcMain.handle('queryGroups', (_,id) => {
+    if(id == null) {
+      return GroupService.getAllItem();
+    }else {
+      return GroupService.queryGroupById();
+    }
+     
+  })
 
 
 

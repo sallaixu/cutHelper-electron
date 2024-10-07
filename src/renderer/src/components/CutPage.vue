@@ -7,7 +7,8 @@
           <a-back-top :target="()=>getTarget()"/>
         </div>
     </a-tab-pane>
-    <a-tab-pane key="groupList" tab="分组">分组页面todo</a-tab-pane>
+    <a-tab-pane key="groupList" tab="分组"><group></group></a-tab-pane>
+    <a-tab-pane key="time" tab="时钟"><time-page></time-page></a-tab-pane>
     <template #rightExtra>
       <a-button :type="appConfig.top?'primary':'default'" @click="top()">
         <template #icon><PushpinOutlined /></template>
@@ -56,17 +57,21 @@ function getTarget() {
 </script>
 
 
-<style>
+<style scoped>
 .box {
   height: 100vh;
   width: 100vw;
 }
 
-.box-tabs .ant-tabs-content {
+.box-tabs :deep() .ant-tabs-content {
   height: 100%;
 }
 
-.ant-list-item-action{
+.box :deep() .ant-list-item-action{
   margin-left:10px !important;
+}
+
+.box :deep() .ant-tabs-nav {
+  margin: 0 0 2px 0;
 }
 </style>

@@ -15,11 +15,9 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
-const route = useRoute();
-    // 获取查询参数
-const queryParams = route.query;
+
 const params = new URLSearchParams(window.location.search)
+console.log(params)
 var item = ref({
     id: params.get("id"),
     title: params.get("createTime"),
@@ -33,5 +31,6 @@ var item = ref({
   width: 100vw;
   height: 100vh;
   overflow-y: scroll;
+  -webkit-user-select: text;
 }
 </style>

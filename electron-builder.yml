@@ -4,12 +4,16 @@ directories:
   buildResources: build
 files:
   - '!**/.vscode/*'
+  # - 'src/renderer/src/html/clock.html'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
 asarUnpack:
   - resources/**
+extraResources: 
+  - from: "./static/*"
+    to: "out/renderer/static/"
 win:
   executableName: cuthelper
 nsis:

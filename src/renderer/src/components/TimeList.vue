@@ -3,7 +3,7 @@
     <a-list class="list" id="list" :loading="initLoading" item-layout="horizontal" :data-source="allCutList">
       <template #renderItem="{ item, index }">
         <a-list-item class="list-item" v-on:click="showDetail(item)" v-on:dblclick="sendCopyItem(item)"
-          style="padding: 7px" :class="{ 'bg': index % 2 === 0 }" >
+          style="padding: 7px" :class="{ 'bg': index % 2 === 0 }" v-if="filterItems.includes(item)">
           <template #actions>
             <a-dropdown :trigger="['click']">
               <!-- <a class="ant-dropdown-link">

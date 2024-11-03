@@ -65,12 +65,11 @@ class CutItemService {
     }
 
     // 删除用户
-    static async deleteUser(id) {
+    static async deleteItem(item) {
         try {
-            const user = await User.findByPk(id);
-            if (!user) throw new Error('User not found');
-            await user.destroy();
-            return { message: 'User deleted successfully' };
+            const cutItem = await CutItem.findByPk(item.id);
+            if (!cutItem) throw new Error('cutItem not found');
+            await cutItem.destroy();
         } catch (error) {
             throw new Error('Error deleting user: ' + error.message);
         }

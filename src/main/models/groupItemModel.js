@@ -20,6 +20,11 @@ const GroupItem = sequelize.define('GroupItem', {
         allowNull: false,
         unique: false
     },
+    title: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: false
+    },
     createTime:{
         type: DataTypes.DATE,
         allowNull:false

@@ -30,6 +30,7 @@ import sequelize from './config/database';
 
 import CutItemService  from './dao/CutItemDao'
 import GroupService  from './dao/GroupDao'
+import GroupItemService  from './dao/GroupItemDao'
 
 import {configStore} from './config/config'
 
@@ -195,7 +196,7 @@ app.whenReady().then(() => {
 
   //删除剪切板item
   ipcMain.on('deleteCutListItem', (_, item) => {
-    deleteItem(JSON.parse(item))
+    CutItemService.deleteItem(JSON.parse(item))
   })
 
 
@@ -222,7 +223,9 @@ app.whenReady().then(() => {
      
   })
 
-
+  ipcMain.handle('queryGroupItems',(_,groupId) => {
+    return GroupItemService.queryItemByGroupId(groupId)
+  })
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

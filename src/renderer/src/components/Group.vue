@@ -20,7 +20,7 @@
     </div>
 
     <a-directory-tree :loadData="loadItem" v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedKeys"
-        multiple :tree-data="groupList">
+        multiple :tree-data="groupList" :loadedKeys="loadedKeys" :load="loadKey">
 
         <template #title="{ key: treeKey, title }">
             <a-dropdown :trigger="['contextmenu']">
@@ -28,12 +28,12 @@
                 <template #overlay>
                     <a-menu @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey)">
 
-                        <a-menu-item @click="deleteItem(item)" key="1">
+                        <a-menu-item key="1">
                             <div>
                                 <EditOutlined /><span style="margin-left: 8px;">编辑</span>
                             </div>
                         </a-menu-item>
-                        <a-menu-item @click="deleteItem(item)" key="0" style="color: #f5222d;">
+                        <a-menu-item  key="delete" style="color: #f5222d;">
                             <div>
                                 <delete-outlined /><span style="margin-left: 8px;">删除</span>
                             </div>
@@ -59,25 +59,31 @@ const newGroupName = ref("")
 const newGroup = ref(false)
 const groupList = ref([])
 
+const loadedKeys=ref([]);
+
 onMounted(() => {
     queryGroups()
 })
 
+function loadKey(keys) {
+    console.log(keys)
+}
+
 function loadItem(node) {
     console.log(node)
-    return new Promise(resolve=>{
-        
-    if (node.dataRef.children) {
-        resolve();
+    if (node.dataRef.isLeaf){
         return;
     }
-
+    return new Promise(resolve=>{
+    
+    
     queryGroupItems(node.key).then(items=>{
         console.log("test",items)
         node.dataRef.children = [...items]
         node.dataRef.isLeaf = false
         resolve()
     })
+    loadedKeys.value.push(node.key)
     
     })
     
@@ -88,13 +94,18 @@ function loadItem(node) {
 
 //查询所有分组
 const queryGroups = () => window.electron.ipcRenderer.invoke("queryGroups", null).then((items) => {
+    loadedKeys.value = []
+    expandedKeys.value = []
     groupList.value = items.map(obj => {
         let newObj = {};
         newObj.title = obj.name
         newObj.key = obj.id
         newObj.createTime = obj.createTime
+        newObj.children = [],
+        newObj.isLeaf = false
         return newObj;
     });
+    
 })
 //查询分组下的数据
 const queryGroupItems = (groupId) => window.electron.ipcRenderer.invoke("queryGroupItems", groupId).then((items) => {
@@ -124,5 +135,20 @@ function sendCreateRequest() {
     newGroup.value = false
     newGroupName.value = ""
 }
+
+
+function onContextMenuClick(treeKey,menuKey){
+    console.log("item",treeKey,menuKey)
+    switch(menuKey){
+        case "delete":
+            console.log("删除key",treeKey)
+    }
+}
+
+//删除item
+function deleteItem({event, node}) {
+    console.log("item",event)
+}
+
 
 </script>

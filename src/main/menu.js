@@ -7,7 +7,7 @@ const menuTemplate = [
       submenu: [
         {
           label: '设置',
-          accelerator: 'CmdOrCtrl+P',
+          // accelerator: 'CmdOrCtrl+P',
           click: () => {
             console.log('open setting');
             createSettingWindow()
@@ -16,10 +16,10 @@ const menuTemplate = [
       ]
     },
     {
-      label: 'Help',
+      label: '帮助',
       submenu: [
         {
-          label: 'Learn More',
+          label: '官网',
           click: () => {
             require('electron').shell.openExternal('https://electronjs.org');
           }

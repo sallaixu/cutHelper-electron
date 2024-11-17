@@ -1,23 +1,15 @@
 <template>
   <div class="cut-list">
-    <RecycleScroller
-      class="scroller"
-      :items="allCutList"
-      :item-size="50"
-      key-field="id"
-    >
-      <template v-slot="{ item }">
-        <div
-          class="list-item"
-          v-on:click="showDetail(item)"
-          v-on:dblclick="sendCopyItem(item)"
-          style="padding: 7px"
-          :class="{ 'bg': index % 2 === 0 }"
-          <!-- v-if="filterItems.includes(item)" -->
-        >
-          <!-- 原有的 a-list-item 内容 -->
-          <div>
+    <a-list class="list" id="list" :loading="initLoading" item-layout="horizontal" :data-source="allCutList">
+      <template #renderItem="{ item, index }">
+        <a-list-item class="list-item" v-on:click="showDetail(item)" v-on:dblclick="sendCopyItem(item)"
+          style="padding: 7px" :class="{ 'bg': index % 2 === 0 }" v-if="filterItems.includes(item)">
+          <template #actions>
             <a-dropdown :trigger="['click']">
+              <!-- <a class="ant-dropdown-link">
+                Click me
+                <DownOutlined />
+              </a> -->
               <more-outlined class="jump" @click.prevent style="cursor: pointer;color: black;" />
               <template #overlay>
                 <a-menu>
@@ -34,7 +26,7 @@
                 </a-menu>
               </template>
             </a-dropdown>
-          </div>
+          </template>
           <a-skeleton avatar :title="false" :loading="!!item.loading" active>
             <a-list-item-meta style="height: 1.5em;line-height:1.5em;overflow: hidden">
               <template #title>
@@ -45,12 +37,15 @@
                 <div style="margin-right: 6px; overflow: hidden;">{{ item.content }}</div>
               </a-popover>
               </template>
-            </a-list-item-meta>
+            </a-list-item-meta style="padding:1px;">
             <div>{{ format(item.createTime, 'short') }}</div>
           </a-skeleton>
-        </div>
+        </a-list-item>
+        
       </template>
-    </RecycleScroller>
+      
+    </a-list>
+    
   </div>
 </template>
 
@@ -59,7 +54,6 @@ import { format, register } from 'timeago.js';
 import { ref, onMounted, computed } from 'vue'
 import { MoreOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue';
-import { RecycleScroller } from 'vue-virtual-scroller';
 import { containsIgnoreCase } from '../../utils/StringUtil'
 import { showMessageShort } from '../../utils/MessageUtil'
 
@@ -121,6 +115,7 @@ window.electron.ipcRenderer.on('update', (_, value) => update(value))
 
 function update(value) {
   allCutList.value.unshift(value)
+  this.$refs.scroller.scrollToItem(0);
 }
 // 关闭弹出信息
 
@@ -223,9 +218,6 @@ defineExpose({ search });
   background-color: rgb(221, 219, 219);
 }
 
-.list-item {
-  display: flex;
-}
 .list-item:hover {
   background-color: rgb(173, 202, 203);
 }

@@ -7,6 +7,7 @@ import CutPage from '../components/CutPage.vue'
 import About from '../components/About.vue'
 import Setting from '../components/setting/Setting.vue'
 import Detail from '../components/Detail.vue'
+import TextEdit from '../components/TextEdit.vue'
 
 
 const routes = [{
@@ -28,6 +29,10 @@ const routes = [{
     path: '/detail',
     component: Detail
 
+  },
+  {
+    path: '/textEdit',
+    component: TextEdit
   }
 ]
 

@@ -19,6 +19,11 @@ import {
   optimizer,
   is
 } from '@electron-toolkit/utils'
+
+import installExtension, {
+  VUEJS3_DEVTOOLS
+} from 'electron-devtools-installer';
+
 import {
   loadMenu
 } from './menu'
@@ -33,6 +38,7 @@ import GroupService  from './dao/GroupDao'
 import GroupItemService  from './dao/GroupItemDao'
 
 import {configStore} from './config/config'
+import { group } from 'console';
 
 // 主窗口
 var mainWindow = null
@@ -61,7 +67,7 @@ function createWindow() {
     webPreferences: {
       preload: join(__dirname, '../preload/index.mjs'),
       sandbox: false,
-      nodeIntegration: true
+      nodeIntegration: true,
     },
     icon: nativeImage.createFromPath(appIcon)
   })
@@ -71,8 +77,12 @@ function createWindow() {
     mainWindow.setAlwaysOnTop(true)
   })
 
-  mainWindow.on('closed', () => {
-    app.quit()
+
+  mainWindow.on('close', (event) => {
+    if (!mainWindow.isMinimized()) {
+      event.preventDefault();
+      mainWindow.hide(); // 隐藏窗口而不是最小化
+    }
   })
 
   var updateText = (readText) => mainWindow.webContents.send("update", readText)
@@ -125,6 +135,9 @@ app.whenReady().then(() => {
   //注册热键
   initHotKey()
 
+  installExtension(VUEJS3_DEVTOOLS)
+        .then((name) => console.log(`Added Extension:  ${name}`))
+        .catch((err) => console.log('An error occurred: ', err));
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
@@ -222,10 +235,21 @@ app.whenReady().then(() => {
     }
      
   })
-
+  // 查询分组items
   ipcMain.handle('queryGroupItems',(_,groupId) => {
     return GroupItemService.queryItemByGroupId(groupId)
   })
+  // 删除分组item
+  ipcMain.handle('deleteGroupItem',(_,groupItemId) => {
+    return GroupItemService.deleteItem(groupItemId)
+  })
+
+  // 添加item到分组
+  ipcMain.handle('addGroupItem',(_,groupItem) => {
+    console.log("item:",groupItem)
+    return GroupItemService.addGroupItem(groupItem)
+  })
+
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

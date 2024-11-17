@@ -1,14 +1,18 @@
 <template>
   <div class="box">
     <a-tabs class="box-tabs" style="height: 100%" v-model:activeKey="activeKey" type="card" size="small">
-    <a-tab-pane  key="timeList" tab="列表" style="height:100%;overflow-y:hidden;">
-        <div id="cutItemBox" style="height: 100%; overflow-y: scroll">
-          <time-list id="timelist" ref="timeListVue"></time-list>
+    <a-tab-pane  key="timeList" tab="列表" style="height:100%;">
+        <time-list id="timelist" ref="timeListVue"></time-list>
+        <!-- <div id="cutItemBox" style="height: 100%;">
+          
           <a-back-top :target="()=>getTarget()"/>
-        </div>
+        </div> -->
     </a-tab-pane>
     <a-tab-pane key="groupList" tab="分组"><group></group></a-tab-pane>
-    <a-tab-pane key="time" tab="时钟"><time-page></time-page></a-tab-pane>
+    <a-tab-pane key="time" tab="白板">
+      <!-- <time-page></time-page> -->
+       <text-edit></text-edit>
+    </a-tab-pane>
     <template #rightExtra>
       <a-button :type="appConfig.top?'primary':'default'" @click="top()">
         <template #icon><PushpinOutlined /></template>
@@ -49,10 +53,6 @@ function search() {
   if(timeListVue.value != null) {
     timeListVue.value.search(searchkey.value)
   }
-}
-
-function getTarget() {
-  return document.getElementById("cutItemBox")
 }
 </script>
 

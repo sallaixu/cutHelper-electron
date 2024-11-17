@@ -5,11 +5,11 @@ import {configStore} from '../config/config'
 
 class GroupItemService {
     // 创建用户
-    static async addGroupItem(group) {
+    static async addGroupItem(groupItem) {
         try {
-            group.id = uuidv4();
-            group.createTime = new Date();
-            const item = await GroupItem.create(group);
+            groupItem.id = uuidv4();
+            groupItem.createTime = new Date();
+            const item = await GroupItem.create(groupItem);
             return item.toJSON();
         } catch (error) {
             throw new Error('Error add groupItem: ' + error.message);
@@ -36,6 +36,20 @@ class GroupItemService {
         try {
             const itemList = (await Group.findAll({order:[["createTime","DESC"]]}));
             return itemList.map(item => item.toJSON());
+        } catch (error) {
+            throw new Error('Error retrieving users: ' + error.message);
+        }
+    }
+
+
+    static async deleteItem(groupItemId) {
+        try {
+            const item = (await GroupItem.findOne({where:{id:groupItemId}}));
+            if (item){
+                await item.destroy();
+                return item.toJSON();
+            }
+            
         } catch (error) {
             throw new Error('Error retrieving users: ' + error.message);
         }

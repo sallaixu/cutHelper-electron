@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/ddf90489-c0ea-4aed-abcd-ac635cd939d9)# cuthelper
+#CutHelper
 
 + 记录历史剪切文本内容 默认500条历史，滚动替换
 + 可进行关键字快速检索历史复制内容
@@ -39,11 +39,11 @@ $ npm run build:mac
 $ npm run build:linux
 ```
 
-> 剪切版历史：记录每次cv
+### 剪切版历史：记录每次cv
 ![image](https://github.com/user-attachments/assets/af777e25-a808-4bab-b35f-55a229259d3d)
-> 分组管理：分类管理常用复杂命令
+### 分组管理：分类管理常用复杂命令
 ![image](https://github.com/user-attachments/assets/36ff3c1e-0d14-46df-a946-2bdeecfe2d9d)
-> 白板：方便快速编辑修改文本内容
+### 白板：方便快速编辑修改文本内容
 ![image](https://github.com/user-attachments/assets/c956f745-a244-4d84-982b-d091333ab0e8)
 
 

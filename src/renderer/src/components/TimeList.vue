@@ -1,8 +1,8 @@
 <template>
   <div class="cut-list" ref="scrollerRef" style="height: 100%;">
     <a-back-top :target="()=>getTarget()"/>
-    <RecycleScroller class="scroller" :items="showItemList" :item-size="40" key-field="id" v-slot="{ index, item }"
-      :key="listKey" id="cutItemBox">
+    <RecycleScroller class="scroller" :items="showItemList" :item-size="40" v-slot="{ index, item }"
+      :key="listKey" id="cutItemBox" :page-mode>
       <!-- page-mode -->
       <!--  -->
       
@@ -20,7 +20,7 @@
                   </div>
                 </template>
                 <div style="margin-right: 6px;white-space: nowrap;">
-                  <label>{{ (index + 1) }} . {{ item.content }}</label>
+                  <label>{{ (index) }} . {{ item.content }}</label>
                 </div>
               </a-popover>
             </template>

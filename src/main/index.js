@@ -146,11 +146,7 @@ app.whenReady().then(() => {
   })
 
   tray = new Tray(nativeImage.createFromPath(appIcon))
-  const contextMenu = Menu.buildFromTemplate([{
-      label: 'todo',
-      type: 'normal',
-      click: () => {}
-    },
+  const contextMenu = Menu.buildFromTemplate([
     {
       label: '关于',
       type: 'normal',
@@ -158,6 +154,11 @@ app.whenReady().then(() => {
         createAboutWindow()
       }
     },
+    {
+      label: '退出',
+      type: 'normal',
+      click: () => {app.exit();}
+    }
   ])
   tray.setToolTip('剪切板助手')
   tray.setContextMenu(contextMenu)

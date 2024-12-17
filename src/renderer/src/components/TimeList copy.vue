@@ -1,49 +1,49 @@
 <template>
   <div class="cut-list" ref="scrollerRef" style="height: 100%;">
     <a-back-top :target="()=>getTarget()"/>
-    <virt-list tabindex="0" class="scroller" :list="showItemList" itemKey="id" :minSize="40" 
-       id="cutItemBox">
+    <RecycleScroller class="scroller" :items="showItemList" :item-size="40" v-slot="{ index, item }"
+      :key="listKey" id="cutItemBox" :page-mode>
       <!-- page-mode -->
       <!--  -->
-      <template #default="{ itemData,index}">
-      <div class="list-item" v-on:dblclick="sendCopyItem(itemData)" style="padding: 5px">
+      
+      <div class="list-item" v-on:dblclick="sendCopyItem(item)" style="padding: 5px">
         <!-- 原有的 a-list-item 内容 -->
         <div style="height: 1.5em;line-height:1.5em;flex:1;overflow: hidden;margin-right: 6px;">
-        <a-skeleton avatar :title="false" :loading="!!itemData.loading" active>
+        <a-skeleton avatar :title="false" :loading="!!item.loading" active>
           <a-list-item-meta >
             <template #title>
               <a-popover trigger="hover" :mouseEnterDelay="1" placement="topLeft">
-                <template #title>{{ formatDate(itemData.createTime) }}</template>
+                <template #title>{{ formatDate(item.createTime) }}</template>
                 <template #content>
                   <div class="detail-style" style="max-height: 80vh;max-width: 90vw;">
-                    <pre>{{ itemData.content }}</pre>
+                    <pre>{{ item.content }}</pre>
                   </div>
                 </template>
                 <div style="margin-right: 6px;white-space: nowrap;">
-                  <label>{{ (index + 1) }} . {{ itemData.content }}</label>
+                  <label>{{ (index) }} . {{ item.content }}</label>
                 </div>
               </a-popover>
             </template>
           </a-list-item-meta>
         </a-skeleton>
         </div>
-        <div  style="display: flex;justify-content: space-between;align-items: center; width: fit-content">
-          <div>{{ format(itemData.createTime, 'short') }}</div>
+        <div style="display: flex;justify-content: space-between;align-items: center; width: fit-content">
+          <div>{{ format(item.createTime, 'short') }}</div>
           <a-dropdown :trigger="['click']">
             <more-outlined class="jump" @click.prevent style="cursor: pointer;color: black;" />
             <template #overlay>
               <a-menu>
-                <a-menu-item @click="deleteItem(itemData)" key="0" style="color: #f5222d;">
+                <a-menu-item @click="deleteItem(item)" key="0" style="color: #f5222d;">
                   <div>
                     <delete-outlined /><span style="margin-left: 8px;">删除</span>
                   </div>
                 </a-menu-item>
-                <a-menu-item @click="openDetail(itemData)" key="1">
+                <a-menu-item @click="openDetail(item)" key="1">
                   <div>
                     <EditOutlined /><span style="margin-left: 8px;">详情</span>
                   </div>
                 </a-menu-item>
-                <a-menu-item @click="openGroupSelect(itemData)" key="2">
+                <a-menu-item @click="openGroupSelect(item)" key="2">
                   <div>
                     <GroupOutlined /><span style="margin-left: 8px;">分组</span>
                   </div>
@@ -53,8 +53,7 @@
           </a-dropdown>
         </div>
       </div>
-      </template>
-    </virt-list>
+    </RecycleScroller>
     <div  style="overflow: scroll;">
       <a-modal v-model:open="groupSelectOpen" title="添加分组" ok-text="确认" cancel-text="取消" @ok="addItemToGroup()">
       <a-radio-group v-model:value="groupSelectId">
@@ -75,8 +74,7 @@ import { format, register } from 'timeago.js';
 import { ref, onMounted, computed, nextTick, watch, watchEffect } from 'vue'
 import { MoreOutlined, DeleteOutlined, EditOutlined ,GroupOutlined} from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue';
-// import { RecycleScroller } from 'vue-virtual-scroller';
-import { VirtList } from 'vue-virt-list';
+import { RecycleScroller } from 'vue-virtual-scroller';
 import { containsIgnoreCase } from '../../utils/StringUtil'
 import { showMessageShort } from '../../utils/MessageUtil'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
@@ -188,6 +186,8 @@ function openGroupSelect(item) {
     groupSelectOpen.value = true
     currCutItem.value = item
     queryGroups()
+    
+
 }
 
 function openDetail(item) {
@@ -239,7 +239,8 @@ function filterData(item) {
 
 // 删除列表中的某一项
 function deleteItem(remove) {
-  let index = allCutList.value.findIndex(item => item.id === remove.id);
+  let index = allCutList.value.findIndex(item => item._id === remove._id);
+
   // 删除对象
   if (index !== -1) {
     sendDeleteItem(remove)

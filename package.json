@@ -37,7 +37,7 @@
     "timeago.js": "^4.0.2",
     "uuid": "^10.0.0",
     "vue-router": "^4.4.2",
-    "vue-virtual-scroller": "^2.0.0-beta.8"
+    "vue-virt-list": "^1.5.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",

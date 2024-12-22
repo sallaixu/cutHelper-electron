@@ -36,6 +36,7 @@ import sequelize from './config/database';
 import CutItemService  from './dao/CutItemDao'
 import GroupService  from './dao/GroupDao'
 import GroupItemService  from './dao/GroupItemDao'
+import CutImageItemService  from './dao/CutImageItemDao'
 
 import {configStore} from './config/config'
 import { group } from 'console';
@@ -87,10 +88,24 @@ function createWindow() {
 
   var updateText = (readText) => mainWindow.webContents.send("update", readText)
   var lastText = ""
+  var lastImage = null
+  //剪切板处理逻辑
   setInterval(async () => {
+    const image = clipboard.readImage();
+    if (!image.isEmpty()) {
+      
+      if(lastImage && Buffer.compare(image.toBitmap(),lastImage) === 0) {
+          return;
+      }
+      console.log("contain image")
+      lastImage = image.toBitmap();
+      const imageData = image.toJPEG(80);
+      CutImageItemService.addCutImageItem(imageData)
+      return;
+    }
     const currText = clipboard.readText();
     if (currText !== lastText && currText) {
-      console.log('new cut');
+      console.log('copy text');
       lastText = currText; // 更新上一次的文本
       // 在这里执行其他操作，例如响应剪切板变化
       var item = await CutItemService.addCutItem(currText)
@@ -249,6 +264,19 @@ app.whenReady().then(() => {
   ipcMain.handle('addGroupItem',(_,groupItem) => {
     console.log("item:",groupItem)
     return GroupItemService.addGroupItem(groupItem)
+  })
+
+
+  // 查询所有图片
+  ipcMain.handle('queryImageItems',async()=>{
+    var imageList = await CutImageItemService.getAllItem();
+    console.log(imageList)
+    //转化数据为临时url
+    imageList.forEach(element => {
+      const buffer = element.content;
+      element.content = `data:image/png;base64,${buffer.toString('base64')}`
+    });
+    return imageList;
   })
 
 

@@ -8,6 +8,7 @@ import About from '../components/About.vue'
 import Setting from '../components/setting/Setting.vue'
 import Detail from '../components/Detail.vue'
 import TextEdit from '../components/TextEdit.vue'
+import ImageItem from '../components/ImageItem.vue'
 
 
 const routes = [{
@@ -33,6 +34,10 @@ const routes = [{
   {
     path: '/textEdit',
     component: TextEdit
+  },
+  {
+    path: '/imageItems',
+    component: ImageItem
   }
 ]
 

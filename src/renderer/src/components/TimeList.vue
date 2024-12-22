@@ -79,7 +79,6 @@ import { message } from 'ant-design-vue';
 import { VirtList } from 'vue-virt-list';
 import { containsIgnoreCase } from '../../utils/StringUtil'
 import { showMessageShort } from '../../utils/MessageUtil'
-import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 
 const localeFunc = (number, index, totalSec) => {

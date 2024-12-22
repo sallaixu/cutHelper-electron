@@ -1,13 +1,10 @@
 <template>
   <div class="box">
     <a-tabs class="box-tabs" style="height: 100%" v-model:activeKey="activeKey" type="card" size="small">
-    <a-tab-pane  key="timeList" tab="列表" style="height:100%;">
+    <a-tab-pane  key="timeList" tab="文本" style="height:100%;">
         <time-list id="timelist" ref="timeListVue"></time-list>
-        <!-- <div id="cutItemBox" style="height: 100%;">
-          
-          <a-back-top :target="()=>getTarget()"/>
-        </div> -->
     </a-tab-pane>
+    <a-tab-pane key="imageList" tab="图片"><image-item></image-item></a-tab-pane>
     <a-tab-pane key="groupList" tab="分组"><group></group></a-tab-pane>
     <a-tab-pane key="time" tab="白板">
       <!-- <time-page></time-page> -->
